@@ -10,7 +10,7 @@
     />
     <title>NIKITAVERSE // С опозданием</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-    <link rel="stylesheet" href="./style.css?v=8" />
+    <link rel="stylesheet" href="./style.css?v=9" />
     <script type="importmap">
       { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
     </script>
@@ -66,9 +66,18 @@
       </section>
     </main>
     <div class="route-progress" aria-hidden="true"><i id="progressBar"></i><span id="percent">000%</span></div>
+    <aside id="tutor" class="tutor" role="dialog" aria-labelledby="tutorTitle" hidden>
+      <div class="tutor__arrow" aria-hidden="true">➜</div>
+      <div class="tutor__bubble">
+        <p id="tutorTitle" class="tutor__title">Похоже, вы пытаетесь посмотреть поздравление.</p>
+        <p>Если хочешь тупо побегать свободно и всё рассмотреть — тыкай сюда ☝</p>
+        <div class="tutor__actions"><button id="tutorGo" type="button">ДАВАЙ</button><button id="tutorClose" type="button">НЕ, Я СКРОЛЛИТЬ</button></div>
+      </div>
+      <div class="tutor__head" aria-hidden="true"><img src="./assets/photo_2026-07-05_01-51-58.jpg" alt=""><i></i></div>
+    </aside>
     <div id="joystick" class="joystick" aria-hidden="true"><i></i></div>
     <div class="free-hint"><span class="hint-desktop">WASD / СТРЕЛКИ — ИДТИ · SHIFT — БЕГ · ЗАЖМИ МЫШЬ — СМОТРЕТЬ</span><span class="hint-touch">ДЖОЙСТИК — ИДТИ · СВАЙП СПРАВА — СМОТРЕТЬ</span></div>
     <div class="corner-note">ПОЗДРАВЛЕНИЕ<br />НЕ ПО ДЕДЛАЙНУ</div>
-    <script type="module" src="./main.js?v=8"></script>
+    <script type="module" src="./main.js?v=9"></script>
   </body>
 </html>

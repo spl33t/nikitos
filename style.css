@@ -40,3 +40,26 @@ html.free .intro,html.free .finale,html.free .route-progress,html.free .corner-n
 .hint-touch{display:none}
 html.free .free-hint{display:block}
 @media (pointer:coarse){html.free .joystick{display:block}.hint-desktop{display:none}.hint-touch{display:inline}html.free .free-hint{left:auto;right:12px;bottom:54px;transform:none;white-space:normal;max-width:170px;text-align:right}html.free .chapter-card{bottom:auto;top:72px}}
+
+/* Tutorial: Nikita's head as an Office-assistant-style mascot pointing at the free-move toggle. */
+.tutor{position:fixed;z-index:20;top:84px;right:4vw;width:min(330px,calc(100vw - 24px));display:grid;justify-items:end;gap:10px;pointer-events:auto;animation:tutor-in .5s cubic-bezier(.2,1.6,.4,1) both}
+.tutor[hidden]{display:none}
+.tutor.bye{animation:tutor-out .3s ease-in both}
+@keyframes tutor-in{from{opacity:0;transform:translateY(30px) scale(.8)}}
+@keyframes tutor-out{to{opacity:0;transform:translateY(20px) scale(.85)}}
+.tutor__arrow{position:absolute;top:-34px;right:34px;color:var(--acid);font-size:30px;line-height:1;transform:rotate(-90deg);text-shadow:0 0 12px #c7ff3888;animation:tutor-point .7s ease-in-out infinite alternate}
+@keyframes tutor-point{to{translate:0 -8px}}
+.tutor__bubble{position:relative;padding:14px 16px 12px;background:#ffffe1;color:#111;border:1px solid #000;border-radius:10px;box-shadow:4px 4px 0 #0008;font:14px/1.4 Tahoma,Verdana,sans-serif}
+.tutor__bubble:after{content:'';position:absolute;right:48px;bottom:-12px;width:20px;height:20px;background:#ffffe1;border-right:1px solid #000;border-bottom:1px solid #000;transform:skewX(30deg) rotate(45deg)}
+.tutor__bubble p{margin:0 0 8px}
+.tutor__title{font-weight:700}
+.tutor__actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.tutor__actions button{padding:5px 10px;background:#d4d0c8;color:#111;border:2px outset #fff;font:700 11px Tahoma,Verdana,sans-serif;cursor:pointer}
+.tutor__actions button:active{border-style:inset}
+.tutor__head{position:relative;width:92px;height:98px;margin-right:22px;background:#d7a18d;border:3px solid #111;box-shadow:5px 5px 0 #0007;overflow:hidden;animation:tutor-bob 1.6s ease-in-out infinite;transform-origin:50% 100%}
+.tutor__head img{position:absolute;left:4px;right:4px;bottom:4px;width:calc(100% - 8px);height:84px;object-fit:cover;object-position:50% 35%;transform:scale(1.35)}
+.tutor__head i{position:absolute;left:-3px;right:-3px;top:-3px;height:24px;background:#211413}
+@keyframes tutor-bob{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-4px)}}
+#freeMove.attention{animation:tutor-glow 1s ease-in-out infinite alternate}
+@keyframes tutor-glow{to{box-shadow:0 0 0 4px #c7ff3855,0 0 22px var(--acid);border-color:var(--acid)}}
+@media(max-width:700px){.tutor{top:72px;right:12px}.tutor__arrow{right:22px}.tutor__bubble{font-size:13px}}

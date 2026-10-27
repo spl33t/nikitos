@@ -224,6 +224,14 @@ joystick.addEventListener('pointermove',e=>{if(joystick.hasPointerCapture(e.poin
 for(const ev of ['pointerup','pointercancel'])joystick.addEventListener(ev,()=>{stick.x=stick.y=0;joyKnob.style.transform=''});
 const held=(...codes)=>codes.some(c=>keys.has(c))?1:0;
 
+// Tutorial mascot: pops up once the boot screen is gone and points at the free-move toggle.
+const tutor=document.querySelector('#tutor');
+function closeTutor(){if(tutor.hidden||tutor.classList.contains('bye'))return;tutor.classList.add('bye');freeBtn.classList.remove('attention');setTimeout(()=>tutor.hidden=true,300)}
+document.querySelector('#tutorGo').onclick=()=>{unlockAudio();closeTutor();if(!freeMode)setFreeMode(true)};
+document.querySelector('#tutorClose').onclick=closeTutor;
+freeBtn.addEventListener('click',closeTutor);
+setTimeout(()=>{if(freeMode)return;tutor.hidden=false;freeBtn.classList.add('attention')},q.has('qa')?300:2800);
+
 const clock=new THREE.Clock();camera.position.set(0,3.9,16.5-qaProgress*ROUTE);sky.material.uniforms.horizon.value.copy(zoneSkies[0][0]);sky.material.uniforms.top.value.copy(zoneSkies[0][1]);
 function animate(){
   const t=clock.getElapsedTime(),dt=Math.min(.05,t-lastT);lastT=t;let motion,travel,uiProgress;
