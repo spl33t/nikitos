@@ -36,13 +36,13 @@
       <section class="intro" id="intro">
         <p class="eyebrow">СЕЗОН 36 · СЕРИЯ «НИКИТА И ЛЕГАСИ»</p>
         <h1>ДАРОВА,<br /><em>НИКИТА.</em></h1>
-        <p class="lede">
+        <!--      <p class="lede">
           Вчера был твой день рождения. Сегодня — поздравление. Классический релиз: фича готова, дедлайн прошёл, все делают вид, что так и задумано.
-        </p>
+        </p> -->
         <p class="from-me">
-          <img class="from-me__avatar" src="./assets/mascot.webp" alt="">
-          Я настолько ленивая тварь, что сгенерировал это для тебя. Но я отважно пинал ИИ балбеса на протяжении двух часов, чтобы сделать так, что бы мне
-          уже самому более-менее нравился результат ;D. Ну и сжёг немного токенов — для дружбана ничего не жалко O___o<span>— Макс</span>
+          <img class="from-me__avatar" src="./assets/mascot.webp" alt="" />
+          Я настолько ленивая тварь, что сгенерировал это для тебя. Но я отважно пинал ИИ балбеса на протяжении двух часов, чтобы сделать так, что бы
+          мне уже самому более-менее нравился результат ;D. Ну и сжёг немного токенов — для дружбана ничего не жалко O___o<span>— Макс</span>
         </p>
         <div class="scroll-cue"><i></i><span>КРУТИ, ЧТОБЫ ИДТИ</span></div>
       </section>
@@ -58,9 +58,8 @@
         <p class="eyebrow">ПАТЧ-НОУТ · ВЫШЕЛ С ОПОЗДАНИЕМ НА 1 ДЕНЬ</p>
         <h2>С ДНЁМ РОЖДЕНИЯ,<br /><em>НИКИТА!</em></h2>
         <p>
-          Да, вспомнил ночью, когда день уже ушёл. Когда-нибудь я тебя поздравлю вовремя — задача в бэклоге, приоритет высокий, срок «к пятнице».<br /><br />Желаю,
-          чтобы заказчики знали, чего хотят, интеграции не падали, сербская шава не уступала новогиреевской, а нейронки работали на тебя, а не вместо
-          тебя. Огонь, короче.
+          Да, вспомнил ночью, когда день уже ушёл. Когда-нибудь я тебя поздравлю вовремя.<br /><br />Желаю,
+          чтобы заказчики знали, чего хотят, интеграции не падали, сербская шава не уступала реутовской, а нейронки работали на тебя. Огонь, короче.
         </p>
         <button id="deploy" class="primary" type="button"><span>ЗАКРЫТЬ ТИКЕТ</span><b>✓</b></button>
         <div id="toast" class="toast">ТИКЕТ ЗАКРЫТ · ОПОЗДАНИЕ: 1 ДЕНЬ · ЛЮБОВЬ: В СРОК</div>
@@ -72,12 +71,17 @@
       <div class="tutor__bubble">
         <p id="tutorTitle" class="tutor__title">Похоже, вы досмотрели поздравление.</p>
         <p>Если хочешь тупо побегать свободно и всё рассмотреть — тыкай сюда ☝</p>
-        <div class="tutor__actions"><button id="tutorGo" type="button">ДАВАЙ</button><button id="tutorClose" type="button">НЕ, Я СКРОЛЛИТЬ</button></div>
+        <div class="tutor__actions">
+          <button id="tutorGo" type="button">ДАВАЙ</button><button id="tutorClose" type="button">НЕ, Я СКРОЛЛИТЬ</button>
+        </div>
       </div>
-      <div class="tutor__head" aria-hidden="true"><img src="./assets/mascot.webp" alt=""></div>
+      <div class="tutor__head" aria-hidden="true"><img src="./assets/mascot.webp" alt="" /></div>
     </aside>
     <div id="joystick" class="joystick" aria-hidden="true"><i></i></div>
-    <div class="free-hint"><span class="hint-desktop">W/S — ИДТИ · A/D — ПОВОРОТ · SHIFT — БЕГ · МЫШЬ — КАМЕРА</span><span class="hint-touch">ДЖОЙСТИК: ВВЕРХ — ИДТИ, ВБОК — ПОВОРОТ</span></div>
+    <div class="free-hint">
+      <span class="hint-desktop">W/S — ИДТИ · A/D — ПОВОРОТ · SHIFT — БЕГ · МЫШЬ — КАМЕРА</span
+      ><span class="hint-touch">ДЖОЙСТИК: ВВЕРХ — ИДТИ, ВБОК — ПОВОРОТ</span>
+    </div>
     <div class="corner-note">ПОЗДРАВЛЕНИЕ<br />НЕ ПО ДЕДЛАЙНУ</div>
     <script type="module" src="./main.js?v=12"></script>
   </body>
