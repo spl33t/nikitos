@@ -70,3 +70,13 @@ html.free .free-hint{display:block}
 .from-me span{clear:both}
 .finale.closed{opacity:0;visibility:hidden;pointer-events:none}
 @media(max-width:700px){.from-me__avatar{width:38px;height:38px;margin-right:8px}}
+
+/* Mode choice: scroll the route or jump straight into free move — in the intro and again in the finale. */
+.mode-pick{display:flex;align-items:center;flex-wrap:wrap;gap:12px 14px;margin-top:24px}
+.mode-pick .scroll-cue{margin-top:0}
+.mode-or{font:800 8px Unbounded;letter-spacing:.14em;color:#ffffff80}
+.mode-free{pointer-events:auto;padding:11px 14px;border:1px solid var(--acid);background:#c7ff3814;color:var(--acid);font:900 9px Unbounded;letter-spacing:.08em;cursor:pointer;transition:background .2s,color .2s}
+.mode-free:hover,.mode-free:focus-visible{background:var(--acid);color:var(--ink)}
+.mode-free--finale{display:block;margin:16px auto 0}
+@media(max-width:700px){.mode-pick{margin-top:12px;gap:10px}.mode-free{padding:10px 12px}}
+.intro.out .mode-free{pointer-events:none}

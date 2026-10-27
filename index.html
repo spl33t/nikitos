@@ -10,7 +10,7 @@
     />
     <title>NIKITAVERSE // С опозданием</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-    <link rel="stylesheet" href="./style.css?v=12" />
+    <link rel="stylesheet" href="./style.css?v=13" />
     <script type="importmap">
       { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
     </script>
@@ -44,7 +44,11 @@
           Я настолько ленивая тварь, что сгенерировал это для тебя. Но я отважно пинал ИИ балбеса на протяжении двух часов, чтобы сделать так, что бы
           мне уже самому более-менее нравился результат ;D. Ну и сжёг немного токенов — для дружбана ничего не жалко O___o<span>— Макс</span>
         </p>
-        <div class="scroll-cue"><i></i><span>КРУТИ, ЧТОБЫ ИДТИ</span></div>
+        <div class="mode-pick">
+          <div class="scroll-cue"><i></i><span>КРУТИ, ЧТОБЫ ИДТИ</span></div>
+          <span class="mode-or">ИЛИ</span>
+          <button class="mode-free" type="button" data-free>ПОБЕГАТЬ СВОБОДНО ➜</button>
+        </div>
       </section>
       <aside class="chapter-card" id="chapterCard" aria-live="polite">
         <div class="chapter-number"><span id="chapterNum">01</span><small>/06</small></div>
@@ -62,6 +66,7 @@
           чтобы заказчики знали, чего хотят, интеграции не падали, сербская шава не уступала реутовской, а нейронки работали на тебя. Огонь, короче.
         </p>
         <button id="deploy" class="primary" type="button"><span>ЗАКРЫТЬ ТИКЕТ</span><b>✓</b></button>
+        <button class="mode-free mode-free--finale" type="button" data-free>ИЛИ ПОБЕГАТЬ ПО МИРУ ➜</button>
         <div id="toast" class="toast">ТИКЕТ ЗАКРЫТ · ОПОЗДАНИЕ: 1 ДЕНЬ · ЛЮБОВЬ: В СРОК</div>
       </section>
     </main>
@@ -83,6 +88,6 @@
       ><span class="hint-touch">ДЖОЙСТИК: ВВЕРХ — ИДТИ, ВБОК — ПОВОРОТ</span>
     </div>
     <div class="corner-note">ПОЗДРАВЛЕНИЕ<br />НЕ ПО ДЕДЛАЙНУ</div>
-    <script type="module" src="./main.js?v=12"></script>
+    <script type="module" src="./main.js?v=13"></script>
   </body>
 </html>

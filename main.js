@@ -229,6 +229,7 @@ const tutor=document.querySelector('#tutor');
 function closeTutor(){if(tutor.hidden||tutor.classList.contains('bye'))return;tutor.classList.add('bye');freeBtn.classList.remove('attention');setTimeout(()=>tutor.hidden=true,300)}
 document.querySelector('#tutorGo').onclick=()=>{unlockAudio();closeTutor();if(!freeMode)setFreeMode(true)};
 document.querySelector('#tutorClose').onclick=closeTutor;
+for(const b of document.querySelectorAll('[data-free]'))b.onclick=()=>{unlockAudio();closeTutor();if(!freeMode)setFreeMode(true)};
 freeBtn.addEventListener('click',closeTutor);
 let tutorShown=false;
 function showTutor(){if(freeMode||tutorShown)return;tutorShown=true;tutor.classList.remove('bye');tutor.hidden=false;freeBtn.classList.add('attention')}
