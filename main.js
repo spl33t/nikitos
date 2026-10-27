@@ -205,7 +205,7 @@ const confetti=[];document.querySelector('#deploy').onclick=()=>{document.queryS
 
 // Free move: walk anywhere — WASD/arrows + drag to look on desktop, a joystick + swipe on touch screens.
 const freeBtn=document.querySelector('#freeMove'),joystick=document.querySelector('#joystick'),joyKnob=joystick.querySelector('i');
-const keys=new Set(),stick={x:0,y:0},look={id:null,x:0};let freeMode=false,freeYaw=0,lastT=0;
+const keys=new Set(),stick={x:0,y:0},look={id:null,x:0};let freeMode=false,freeYaw=0,lastT=0,viewShift=innerHeight>innerWidth?.27:0;
 const isTouch=matchMedia('(pointer:coarse)').matches,FREE_X=420,FREE_Z=[90,-590];
 function setFreeMode(on){freeMode=on;document.documentElement.classList.toggle('free',on);freeBtn.setAttribute('aria-pressed',on);freeBtn.textContent=on?'SCROLL MODE':'FREE MOVE';keys.clear();stick.x=stick.y=0;joyKnob.style.transform='';
   // "Forward" is where the camera looks, not where Nikita faces — at the start he faces the camera.
@@ -236,12 +236,13 @@ const clock=new THREE.Clock();camera.position.set(0,3.9,16.5-qaProgress*ROUTE);s
 function animate(){
   const t=clock.getElapsedTime(),dt=Math.min(.05,t-lastT);lastT=t;let motion,travel,uiProgress;
   if(freeMode){
-    freeYaw+=(held('ArrowLeft')-held('ArrowRight'))*1.8*dt;
-    let side=held('KeyD')-held('KeyA')+stick.x,fwd=held('KeyW','ArrowUp')-held('KeyS','ArrowDown')-stick.y;const len=Math.hypot(side,fwd);if(len>1){side/=len;fwd/=len}
-    const speed=keys.has('ShiftLeft')||keys.has('ShiftRight')?26:13,f=new THREE.Vector3(-Math.sin(freeYaw),0,-Math.cos(freeYaw)),r=new THREE.Vector3(-f.z,0,f.x),move=f.multiplyScalar(fwd).add(r.multiplyScalar(side)).multiplyScalar(speed*dt);
+    // Steering controls: left/right turn Nikita, forward/back walk — so the camera always stays behind his back.
+    const turn=held('KeyD','ArrowRight')-held('KeyA','ArrowLeft')+stick.x,fwd=THREE.MathUtils.clamp(held('KeyW','ArrowUp')-held('KeyS','ArrowDown')-stick.y,-1,1);
+    freeYaw-=THREE.MathUtils.clamp(turn,-1,1)*2.4*dt;
+    const speed=keys.has('ShiftLeft')||keys.has('ShiftRight')?26:13,move=new THREE.Vector3(-Math.sin(freeYaw),0,-Math.cos(freeYaw)).multiplyScalar(fwd*speed*dt);
     nikita.position.x=THREE.MathUtils.clamp(nikita.position.x+move.x,-FREE_X,FREE_X);nikita.position.z=THREE.MathUtils.clamp(nikita.position.z+move.z,FREE_Z[1],FREE_Z[0]);
-    const dist=move.length();walkPhase+=dist*4.05;motion=Math.min(1,dist/dt/13||0);
-    if(dist>.001){const yawDelta=THREE.MathUtils.euclideanModulo(Math.atan2(move.x,move.z)-nikita.rotation.y+Math.PI,Math.PI*2)-Math.PI;nikita.rotation.y+=yawDelta*.2}
+    const dist=move.length();walkPhase+=dist*4.05+Math.abs(turn)*dt*3;motion=Math.min(1,dist/dt/13+Math.abs(turn)*.4||0);
+    const yawDelta=THREE.MathUtils.euclideanModulo(freeYaw+Math.PI-nikita.rotation.y+Math.PI,Math.PI*2)-Math.PI;nikita.rotation.y+=yawDelta*.25;
     const back=new THREE.Vector3(Math.sin(freeYaw),0,Math.cos(freeYaw));camera.position.lerp(new THREE.Vector3(nikita.position.x+back.x*10.5,3.9+Math.sin(t*.7)*.08,nikita.position.z+back.z*10.5),.15);camera.lookAt(nikita.position.x-back.x*12,2.4,nikita.position.z-back.z*12);
     travel=6-nikita.position.z;uiProgress=THREE.MathUtils.clamp(travel/ROUTE,0,1);
   }else{
@@ -254,6 +255,8 @@ function animate(){
   torso.rotation.z=Math.sin(walkPhase)*.035*motion;shoulders.rotation.z=torso.rotation.z;hips.rotation.z=-torso.rotation.z*.45;sky.position.copy(camera.position);
   world.traverse(o=>{if(o.userData.spin){o.rotation.x+=o.userData.spin*.45;o.rotation.y+=o.userData.spin}});for(const o of floating){const b=o.userData.bob;o.position.y=b.y+Math.sin(t*b.speed+b.phase)*b.amp}handPivot.rotation.z=-t*.9;orbit.rotation.y=t*.12;for(const o of spinners)o.rotation.z=t*.25;for(const m of messages){m.rotation.x=t*1.3;m.rotation.y=t*.7}messages.forEach(m=>{m.position.z=RAIL_START-((t*7+m.userData.lane*RAIL_LEN/messages.length)%RAIL_LEN)});const upsideFade=1-THREE.MathUtils.smoothstep(camera.position.z+180,50,120);for(const m of upsideMats){m.opacity=upsideFade;m.visible=upsideFade>.01}const gap=3.7+(Math.sin(t*.6)*.5+.5)*3.2;for(const c of cubeCells)c.position.copy(c.userData.cell).multiplyScalar(gap);dataCube.rotation.y=t*.15;dataCube.rotation.x=t*.09;for(const p of confetti){p.position.add(p.userData.vel);p.userData.vel.y-=.0015;p.rotation.x+=.08;if(p.position.y<-2)p.position.y=10}
   const zoneIndex=Math.min(5,Math.floor(uiProgress*6)),[skyH,skyT]=zoneSkies[zoneIndex];sky.material.uniforms.horizon.value.lerp(skyH,.03);sky.material.uniforms.top.value.lerp(skyT,.03);scene.fog.color.copy(sky.material.uniforms.horizon.value);
+  const portrait=innerHeight>innerWidth,shiftTarget=portrait?(!freeMode&&uiProgress<.055?.27:.07):0;viewShift+=(shiftTarget-viewShift)*.06;
+  if(Math.abs(viewShift)>.001)camera.setViewOffset(innerWidth,innerHeight,0,viewShift*innerHeight,innerWidth,innerHeight);else if(camera.view)camera.clearViewOffset();
   updateUi(uiProgress);renderer.render(scene,camera);requestAnimationFrame(animate)
 }
 animate();setTimeout(()=>document.querySelector('#boot').classList.add('done'),1500);
