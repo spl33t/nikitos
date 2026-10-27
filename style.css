@@ -64,3 +64,9 @@ html.free .free-hint{display:block}
 @keyframes tutor-glow{to{box-shadow:0 0 0 4px #c7ff3855,0 0 22px var(--acid);border-color:var(--acid)}}
 @media(max-width:700px){.tutor{top:72px;right:12px}.tutor__arrow{right:22px}.tutor__bubble{font-size:13px}}
 @media(max-width:700px){.intro{padding:14px 15px}.from-me{margin-top:10px;padding:8px 10px;font-size:11px;line-height:1.38}.scroll-cue{margin-top:12px}}
+
+/* The mascot greets from the intro next to Max's note; the free-move offer itself waits for the finale. */
+.from-me__avatar{float:left;width:46px;height:46px;margin:2px 10px 4px 0;border:2px solid #111;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--acid);animation:tutor-bob 1.6s ease-in-out infinite;transform-origin:50% 100%}
+.from-me span{clear:both}
+.finale.closed{opacity:0;visibility:hidden;pointer-events:none}
+@media(max-width:700px){.from-me__avatar{width:38px;height:38px;margin-right:8px}}

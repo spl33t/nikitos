@@ -196,12 +196,12 @@ const intro=document.querySelector('#intro'),card=document.querySelector('#chapt
 const qaProgress=q.has('qa')?(Number(q.get('qa'))||0)/100:0;
 let displayedChapter=-1,scrollTarget=qaProgress,progress=qaProgress,lastProgress=qaProgress,walkPhase=0,lastStep=0,facingForward=false,audio;
 function updateScroll(){const max=document.documentElement.scrollHeight-innerHeight;scrollTarget=max>0?scrollY/max:0}addEventListener('scroll',updateScroll,{passive:true});if(!q.has('qa'))updateScroll();
-function updateUi(p){intro.classList.toggle('out',p>.055);card.classList.toggle('show',p>.06&&p<.91);finale.classList.toggle('show',p>.94);const chapter=Math.min(5,Math.floor(p*6));if(chapter!==displayedChapter){displayedChapter=chapter;const d=chapters[chapter];num.textContent=String(chapter+1).padStart(2,'0');tag.textContent=d.tag;title.textContent=d.title;chapterText.textContent=d.text}bar.style.height=`${p*100}%`;document.querySelector('.route-progress').style.setProperty('--p',p);percent.textContent=`${String(Math.round(p*100)).padStart(3,'0')}%`}
+function updateUi(p){intro.classList.toggle('out',p>.055);card.classList.toggle('show',p>.06&&p<.91);if(p<.9)finale.classList.remove('closed');finale.classList.toggle('show',p>.94);const chapter=Math.min(5,Math.floor(p*6));if(chapter!==displayedChapter){displayedChapter=chapter;const d=chapters[chapter];num.textContent=String(chapter+1).padStart(2,'0');tag.textContent=d.tag;title.textContent=d.title;chapterText.textContent=d.text}bar.style.height=`${p*100}%`;document.querySelector('.route-progress').style.setProperty('--p',p);percent.textContent=`${String(Math.round(p*100)).padStart(3,'0')}%`}
 // Browsers only allow audio after a click/tap/key, so the context starts on the first one and blips stay silent until then.
 function unlockAudio(){audio||=new AudioContext();audio.resume()}for(const ev of ['pointerdown','keydown','touchstart'])addEventListener(ev,unlockAudio,{once:true,passive:true});
 function blip(freq,gain=.045,type='triangle'){if(!audio||audio.state!=='running')return;const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gain,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.16);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+.17)}
 document.querySelector('.brand').onclick=e=>{e.preventDefault();scrollTo({top:0,behavior:'smooth'})};
-const confetti=[];document.querySelector('#deploy').onclick=()=>{document.querySelector('#toast').classList.add('show');unlockAudio();blip(880);for(let i=0;i<160;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(.1,.04,.2),i%2?matAcid:matHot);m.position.set(nikita.position.x+(Math.random()-.5)*11,8+Math.random()*7,nikita.position.z+(Math.random()-.5)*9);m.userData.vel=new THREE.Vector3((Math.random()-.5)*.05,-.035-Math.random()*.08,(Math.random()-.5)*.05);scene.add(m);confetti.push(m)}};
+const confetti=[];document.querySelector('#deploy').onclick=()=>{document.querySelector('#toast').classList.add('show');setTimeout(()=>{finale.classList.add('closed');showTutor()},2400);unlockAudio();blip(880);for(let i=0;i<160;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(.1,.04,.2),i%2?matAcid:matHot);m.position.set(nikita.position.x+(Math.random()-.5)*11,8+Math.random()*7,nikita.position.z+(Math.random()-.5)*9);m.userData.vel=new THREE.Vector3((Math.random()-.5)*.05,-.035-Math.random()*.08,(Math.random()-.5)*.05);scene.add(m);confetti.push(m)}};
 
 // Free move: walk anywhere — WASD/arrows + drag to look on desktop, a joystick + swipe on touch screens.
 const freeBtn=document.querySelector('#freeMove'),joystick=document.querySelector('#joystick'),joyKnob=joystick.querySelector('i');
@@ -224,13 +224,14 @@ joystick.addEventListener('pointermove',e=>{if(joystick.hasPointerCapture(e.poin
 for(const ev of ['pointerup','pointercancel'])joystick.addEventListener(ev,()=>{stick.x=stick.y=0;joyKnob.style.transform=''});
 const held=(...codes)=>codes.some(c=>keys.has(c))?1:0;
 
-// Tutorial mascot: pops up once the boot screen is gone and points at the free-move toggle.
+// Tutorial mascot: once the ticket is closed in the finale, the card steps aside and the mascot offers free move.
 const tutor=document.querySelector('#tutor');
 function closeTutor(){if(tutor.hidden||tutor.classList.contains('bye'))return;tutor.classList.add('bye');freeBtn.classList.remove('attention');setTimeout(()=>tutor.hidden=true,300)}
 document.querySelector('#tutorGo').onclick=()=>{unlockAudio();closeTutor();if(!freeMode)setFreeMode(true)};
 document.querySelector('#tutorClose').onclick=closeTutor;
 freeBtn.addEventListener('click',closeTutor);
-setTimeout(()=>{if(freeMode)return;tutor.hidden=false;freeBtn.classList.add('attention')},q.has('qa')?300:2800);
+let tutorShown=false;
+function showTutor(){if(freeMode||tutorShown)return;tutorShown=true;tutor.classList.remove('bye');tutor.hidden=false;freeBtn.classList.add('attention')}
 
 const clock=new THREE.Clock();camera.position.set(0,3.9,16.5-qaProgress*ROUTE);sky.material.uniforms.horizon.value.copy(zoneSkies[0][0]);sky.material.uniforms.top.value.copy(zoneSkies[0][1]);
 function animate(){
