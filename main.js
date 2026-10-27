@@ -11,7 +11,9 @@ const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'h
 function resizeRenderer(){renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight,false)}resizeRenderer();
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 const scene=new THREE.Scene();scene.fog=new THREE.Fog('#9fb8d8',70,420);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,700);
+// Portrait phones get a wider lens, otherwise Nikita fills half the screen.
+const fovFor=aspect=>aspect<1?78:62;
+const camera=new THREE.PerspectiveCamera(fovFor(innerWidth/innerHeight),innerWidth/innerHeight,.1,700);
 const loader=new THREE.TextureLoader();
 const maxAnisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
 const fileNames=['photo_2017-11-25_02-09-38.jpg','photo_2021-01-17_22-19-37.jpg','photo_2021-03-07_23-48-58.jpg','photo_2021-08-09_10-50-39.jpg','photo_2022-02-12_12-04-24.jpg','photo_2022-03-21_01-29-55.jpg','photo_2023-07-23_20-15-31.jpg','photo_2025-07-03_17-40-48.jpg','photo_2025-07-09_11-22-08.jpg','photo_2025-08-08_00-59-19.jpg','photo_2026-03-30_17-15-11.jpg','photo_2026-07-05_01-51-58.jpg'];
@@ -201,15 +203,50 @@ function blip(freq,gain=.045,type='triangle'){if(!audio||audio.state!=='running'
 document.querySelector('.brand').onclick=e=>{e.preventDefault();scrollTo({top:0,behavior:'smooth'})};
 const confetti=[];document.querySelector('#deploy').onclick=()=>{document.querySelector('#toast').classList.add('show');unlockAudio();blip(880);for(let i=0;i<160;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(.1,.04,.2),i%2?matAcid:matHot);m.position.set(nikita.position.x+(Math.random()-.5)*11,8+Math.random()*7,nikita.position.z+(Math.random()-.5)*9);m.userData.vel=new THREE.Vector3((Math.random()-.5)*.05,-.035-Math.random()*.08,(Math.random()-.5)*.05);scene.add(m);confetti.push(m)}};
 
+// Free move: walk anywhere — WASD/arrows + drag to look on desktop, a joystick + swipe on touch screens.
+const freeBtn=document.querySelector('#freeMove'),joystick=document.querySelector('#joystick'),joyKnob=joystick.querySelector('i');
+const keys=new Set(),stick={x:0,y:0},look={id:null,x:0};let freeMode=false,freeYaw=0,lastT=0;
+const isTouch=matchMedia('(pointer:coarse)').matches,FREE_X=420,FREE_Z=[90,-590];
+function setFreeMode(on){freeMode=on;document.documentElement.classList.toggle('free',on);freeBtn.setAttribute('aria-pressed',on);freeBtn.textContent=on?'SCROLL MODE':'FREE MOVE';keys.clear();stick.x=stick.y=0;joyKnob.style.transform='';
+  // "Forward" is where the camera looks, not where Nikita faces — at the start he faces the camera.
+  if(on){const dir=camera.getWorldDirection(new THREE.Vector3());freeYaw=Math.atan2(-dir.x,-dir.z)}
+  else{const p=THREE.MathUtils.clamp((6-nikita.position.z)/ROUTE,0,1);progress=lastProgress=scrollTarget=p;requestAnimationFrame(()=>scrollTo(0,p*(document.documentElement.scrollHeight-innerHeight)))}}
+freeBtn.onclick=()=>{unlockAudio();setFreeMode(!freeMode)};
+const moveKeys=['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','ShiftLeft','ShiftRight'];
+addEventListener('keydown',e=>{if(freeMode&&moveKeys.includes(e.code)){keys.add(e.code);e.preventDefault()}});
+addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',()=>keys.clear());
+canvas.addEventListener('pointerdown',e=>{if(!freeMode||(isTouch&&e.clientX<innerWidth*.4))return;look.id=e.pointerId;look.x=e.clientX;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(e.pointerId!==look.id)return;freeYaw-=(e.clientX-look.x)*(isTouch?.008:.005);look.x=e.clientX});
+for(const ev of ['pointerup','pointercancel'])canvas.addEventListener(ev,e=>{if(e.pointerId===look.id)look.id=null});
+function moveStick(e){const r=joystick.getBoundingClientRect(),max=r.width/2-12;let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const len=Math.hypot(dx,dy);if(len>max){dx*=max/len;dy*=max/len}stick.x=dx/max;stick.y=dy/max;joyKnob.style.transform=`translate(${dx}px,${dy}px)`}
+joystick.addEventListener('pointerdown',e=>{joystick.setPointerCapture(e.pointerId);unlockAudio();moveStick(e)});
+joystick.addEventListener('pointermove',e=>{if(joystick.hasPointerCapture(e.pointerId))moveStick(e)});
+for(const ev of ['pointerup','pointercancel'])joystick.addEventListener(ev,()=>{stick.x=stick.y=0;joyKnob.style.transform=''});
+const held=(...codes)=>codes.some(c=>keys.has(c))?1:0;
+
 const clock=new THREE.Clock();camera.position.set(0,3.9,16.5-qaProgress*ROUTE);sky.material.uniforms.horizon.value.copy(zoneSkies[0][0]);sky.material.uniforms.top.value.copy(zoneSkies[0][1]);
 function animate(){
-  const t=clock.getElapsedTime();progress+=(scrollTarget-progress)*.075;const delta=progress-lastProgress;lastProgress=progress;const travel=progress*ROUTE,roadX=roadXAt(travel);nikita.position.set(roadX,.45,6-travel);
-  const motion=Math.min(1,Math.abs(delta)*ROUTE*1.18);walkPhase+=delta*ROUTE*4.05;const step=Math.floor(walkPhase/Math.PI);if(step!==lastStep&&motion>.25){lastStep=step;blip(95+Math.random()*30,.03,'square')}if(delta>.00001)facingForward=true;else if(delta<-.00001)facingForward=false;limbs.forEach(l=>{l.part.rotation.x=Math.sin(walkPhase)*.72*l.side*(l.type==='leg'?1:-1)*motion});nikita.position.y=.45+Math.abs(Math.sin(walkPhase))*.16*motion;
-  const desiredYaw=(facingForward?Math.PI:0)-Math.sin(travel*.12)*.2,yawDelta=THREE.MathUtils.euclideanModulo(desiredYaw-nikita.rotation.y+Math.PI,Math.PI*2)-Math.PI;nikita.rotation.y+=yawDelta*.14;torso.rotation.z=Math.sin(walkPhase)*.035*motion;shoulders.rotation.z=torso.rotation.z;hips.rotation.z=-torso.rotation.z*.45;
-  const camZ=nikita.position.z+10.5,camX=nikita.position.x+Math.sin(travel*.045)*1.2;camera.position.lerp(new THREE.Vector3(camX,3.9+Math.sin(t*.7)*.08,camZ),.12);camera.lookAt(nikita.position.x,2.4,nikita.position.z-12);camera.rotation.z+=Math.sin(travel*.08)*.02;sky.position.copy(camera.position);
+  const t=clock.getElapsedTime(),dt=Math.min(.05,t-lastT);lastT=t;let motion,travel,uiProgress;
+  if(freeMode){
+    freeYaw+=(held('ArrowLeft')-held('ArrowRight'))*1.8*dt;
+    let side=held('KeyD')-held('KeyA')+stick.x,fwd=held('KeyW','ArrowUp')-held('KeyS','ArrowDown')-stick.y;const len=Math.hypot(side,fwd);if(len>1){side/=len;fwd/=len}
+    const speed=keys.has('ShiftLeft')||keys.has('ShiftRight')?26:13,f=new THREE.Vector3(-Math.sin(freeYaw),0,-Math.cos(freeYaw)),r=new THREE.Vector3(-f.z,0,f.x),move=f.multiplyScalar(fwd).add(r.multiplyScalar(side)).multiplyScalar(speed*dt);
+    nikita.position.x=THREE.MathUtils.clamp(nikita.position.x+move.x,-FREE_X,FREE_X);nikita.position.z=THREE.MathUtils.clamp(nikita.position.z+move.z,FREE_Z[1],FREE_Z[0]);
+    const dist=move.length();walkPhase+=dist*4.05;motion=Math.min(1,dist/dt/13||0);
+    if(dist>.001){const yawDelta=THREE.MathUtils.euclideanModulo(Math.atan2(move.x,move.z)-nikita.rotation.y+Math.PI,Math.PI*2)-Math.PI;nikita.rotation.y+=yawDelta*.2}
+    const back=new THREE.Vector3(Math.sin(freeYaw),0,Math.cos(freeYaw));camera.position.lerp(new THREE.Vector3(nikita.position.x+back.x*10.5,3.9+Math.sin(t*.7)*.08,nikita.position.z+back.z*10.5),.15);camera.lookAt(nikita.position.x-back.x*12,2.4,nikita.position.z-back.z*12);
+    travel=6-nikita.position.z;uiProgress=THREE.MathUtils.clamp(travel/ROUTE,0,1);
+  }else{
+    progress+=(scrollTarget-progress)*.075;const delta=progress-lastProgress;lastProgress=progress;travel=progress*ROUTE;uiProgress=progress;nikita.position.set(roadXAt(travel),.45,6-travel);
+    motion=Math.min(1,Math.abs(delta)*ROUTE*1.18);walkPhase+=delta*ROUTE*4.05;if(delta>.00001)facingForward=true;else if(delta<-.00001)facingForward=false;
+    const desiredYaw=(facingForward?Math.PI:0)-Math.sin(travel*.12)*.2,yawDelta=THREE.MathUtils.euclideanModulo(desiredYaw-nikita.rotation.y+Math.PI,Math.PI*2)-Math.PI;nikita.rotation.y+=yawDelta*.14;
+    const camZ=nikita.position.z+10.5,camX=nikita.position.x+Math.sin(travel*.045)*1.2;camera.position.lerp(new THREE.Vector3(camX,3.9+Math.sin(t*.7)*.08,camZ),.12);camera.lookAt(nikita.position.x,2.4,nikita.position.z-12);camera.rotation.z+=Math.sin(travel*.08)*.02;
+  }
+  const step=Math.floor(walkPhase/Math.PI);if(step!==lastStep&&motion>.25){lastStep=step;blip(95+Math.random()*30,.03,'square')}limbs.forEach(l=>{l.part.rotation.x=Math.sin(walkPhase)*.72*l.side*(l.type==='leg'?1:-1)*motion});nikita.position.y=.45+Math.abs(Math.sin(walkPhase))*.16*motion;
+  torso.rotation.z=Math.sin(walkPhase)*.035*motion;shoulders.rotation.z=torso.rotation.z;hips.rotation.z=-torso.rotation.z*.45;sky.position.copy(camera.position);
   world.traverse(o=>{if(o.userData.spin){o.rotation.x+=o.userData.spin*.45;o.rotation.y+=o.userData.spin}});for(const o of floating){const b=o.userData.bob;o.position.y=b.y+Math.sin(t*b.speed+b.phase)*b.amp}handPivot.rotation.z=-t*.9;orbit.rotation.y=t*.12;for(const o of spinners)o.rotation.z=t*.25;for(const m of messages){m.rotation.x=t*1.3;m.rotation.y=t*.7}messages.forEach(m=>{m.position.z=RAIL_START-((t*7+m.userData.lane*RAIL_LEN/messages.length)%RAIL_LEN)});const upsideFade=1-THREE.MathUtils.smoothstep(camera.position.z+180,50,120);for(const m of upsideMats){m.opacity=upsideFade;m.visible=upsideFade>.01}const gap=3.7+(Math.sin(t*.6)*.5+.5)*3.2;for(const c of cubeCells)c.position.copy(c.userData.cell).multiplyScalar(gap);dataCube.rotation.y=t*.15;dataCube.rotation.x=t*.09;for(const p of confetti){p.position.add(p.userData.vel);p.userData.vel.y-=.0015;p.rotation.x+=.08;if(p.position.y<-2)p.position.y=10}
-  const zoneIndex=Math.min(5,Math.floor(progress*6)),[skyH,skyT]=zoneSkies[zoneIndex];sky.material.uniforms.horizon.value.lerp(skyH,.03);sky.material.uniforms.top.value.lerp(skyT,.03);scene.fog.color.copy(sky.material.uniforms.horizon.value);
-  updateUi(progress);renderer.render(scene,camera);requestAnimationFrame(animate)
+  const zoneIndex=Math.min(5,Math.floor(uiProgress*6)),[skyH,skyT]=zoneSkies[zoneIndex];sky.material.uniforms.horizon.value.lerp(skyH,.03);sky.material.uniforms.top.value.lerp(skyT,.03);scene.fog.color.copy(sky.material.uniforms.horizon.value);
+  updateUi(uiProgress);renderer.render(scene,camera);requestAnimationFrame(animate)
 }
 animate();setTimeout(()=>document.querySelector('#boot').classList.add('done'),1500);
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();resizeRenderer();if(!q.has('qa'))updateScroll()});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=fovFor(camera.aspect);camera.updateProjectionMatrix();resizeRenderer();if(!q.has('qa'))updateScroll()});

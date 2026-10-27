@@ -27,3 +27,16 @@ em{font-style:normal;color:var(--acid)}
 .corner-note{position:fixed;z-index:6;right:4vw;bottom:4vh;text-align:right;color:#ffffff62;font:800 7px/1.7 Unbounded;letter-spacing:.15em;pointer-events:none}
 @media(max-width:700px){.topbar{height:60px;padding:0 16px}.brand{font-size:14px}.status{display:none}.scroll-track{height:1450vh}.intro{left:18px;bottom:28px;width:calc(100vw - 36px);padding:18px;background:#07070bc9;border:1px solid #ffffff26;backdrop-filter:blur(10px)}.intro h1{font-size:clamp(35px,11vw,48px)}.lede{font-size:13px}.scroll-cue{margin-top:18px}.chapter-card{left:14px;bottom:16px;width:calc(100vw - 45px);padding:12px 13px;gap:12px}.chapter-number{font-size:31px}.chapter-card h2{font-size:17px}.chapter-card p:last-child{display:none}.finale{padding:24px 17px}.finale h2{font-size:clamp(34px,10vw,48px)}.finale>p:not(.eyebrow){font-size:13px}.route-progress{right:10px;height:26vh}.route-progress span,.corner-note{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+
+/* Free move: page scroll is off, the world is walked with keys/mouse or a touch joystick. */
+html.free,html.free body{overflow:hidden}
+html.free #world{touch-action:none;cursor:grab}
+html.free #world:active{cursor:grabbing}
+html.free .intro,html.free .finale,html.free .route-progress,html.free .corner-note{display:none}
+#freeMove[aria-pressed="true"]{background:var(--acid);color:var(--ink);border-color:var(--acid)}
+.joystick{display:none;position:fixed;z-index:9;left:22px;bottom:26px;width:118px;height:118px;border-radius:50%;border:1px solid #ffffff55;background:#07070b80;backdrop-filter:blur(8px);touch-action:none}
+.joystick i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:var(--acid);box-shadow:0 0 18px #c7ff3866}
+.free-hint{display:none;position:fixed;z-index:9;right:24px;bottom:22px;padding:8px 12px;background:#07070bc9;border:1px solid #ffffff26;font:800 8px/1.5 Unbounded;letter-spacing:.12em;white-space:nowrap;pointer-events:none}
+.hint-touch{display:none}
+html.free .free-hint{display:block}
+@media (pointer:coarse){html.free .joystick{display:block}.hint-desktop{display:none}.hint-touch{display:inline}html.free .free-hint{left:auto;right:12px;bottom:54px;transform:none;white-space:normal;max-width:170px;text-align:right}html.free .chapter-card{bottom:auto;top:72px}}

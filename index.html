@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#09070f" />
-    <meta name="description" content="NIKITAVERSE — поздравление Никиты с днём рождения. Вышло на день позже дедлайна, как и положено нормальному релизу." />
+    <meta
+      name="description"
+      content="NIKITAVERSE — поздравление Никиты с днём рождения. Вышло на день позже дедлайна, как и положено нормальному релизу."
+    />
     <title>NIKITAVERSE // С опозданием</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-    <link rel="stylesheet" href="./style.css?v=6" />
+    <link rel="stylesheet" href="./style.css?v=8" />
     <script type="importmap">
-      {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"}}
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
     </script>
   </head>
   <body>
@@ -25,31 +28,47 @@
     <header class="topbar">
       <a class="brand" href="#" aria-label="В начало">NIKITA<span>VERSE</span></a>
       <div class="status"><i></i> ДЕДЛАЙН: ВЧЕРА</div>
+      <button id="freeMove" class="icon-btn" type="button" aria-pressed="false">FREE MOVE</button>
     </header>
 
     <div class="scroll-track" aria-hidden="true"></div>
     <main class="ui">
       <section class="intro" id="intro">
         <p class="eyebrow">СЕЗОН 36 · СЕРИЯ «НИКИТА И ЛЕГАСИ»</p>
-        <h1>ДАРОВА,<br><em>НИКИТА.</em></h1>
-        <p class="lede">Вчера был твой день рождения. Сегодня — поздравление. Классический релиз: фича готова, дедлайн прошёл, все делают вид, что так и задумано.</p>
-        <p class="from-me">Я настолько ленивая тварь, что сгенерировал это для тебя. Но честно, я потратил наверное пол часа, чтобы сделать так, что мне уже самому более-менее нравится. Ну и сжёг немного токенов — для дружбана ничего не жалко ;D<span>— Макс</span></p>
+        <h1>ДАРОВА,<br /><em>НИКИТА.</em></h1>
+        <p class="lede">
+          Вчера был твой день рождения. Сегодня — поздравление. Классический релиз: фича готова, дедлайн прошёл, все делают вид, что так и задумано.
+        </p>
+        <p class="from-me">
+          Я настолько ленивая тварь, что сгенерировал это для тебя. Но я отважно пинал ИИ балбеса на протяжении двух часов, чтобы сделать так, что бы мне
+          уже самому более-менее нравился результат ;D. Ну и сжёг немного токенов — для дружбана ничего не жалко O___o<span>— Макс</span>
+        </p>
         <div class="scroll-cue"><i></i><span>КРУТИ, ЧТОБЫ ИДТИ</span></div>
       </section>
       <aside class="chapter-card" id="chapterCard" aria-live="polite">
         <div class="chapter-number"><span id="chapterNum">01</span><small>/06</small></div>
-        <div><p id="chapterTag" class="eyebrow">FA · FIRST ASCENSION</p><h2 id="chapterTitle">АНАЛИЗИРУЕТ ДАЖЕ ТОРТ</h2><p id="chapterText">Нашёл требования к празднику. Декомпозировал свечи.</p></div>
+        <div>
+          <p id="chapterTag" class="eyebrow">FA · FIRST ASCENSION</p>
+          <h2 id="chapterTitle">АНАЛИЗИРУЕТ ДАЖЕ ТОРТ</h2>
+          <p id="chapterText">Нашёл требования к празднику. Декомпозировал свечи.</p>
+        </div>
       </aside>
       <section class="finale" id="finale">
         <p class="eyebrow">ПАТЧ-НОУТ · ВЫШЕЛ С ОПОЗДАНИЕМ НА 1 ДЕНЬ</p>
-        <h2>С ДНЁМ РОЖДЕНИЯ,<br><em>НИКИТА!</em></h2>
-        <p>Да, вспомнил ночью, когда день уже ушёл. Когда-нибудь я тебя поздравлю вовремя — задача в бэклоге, приоритет высокий, срок «к пятнице».<br><br>Желаю, чтобы заказчики знали, чего хотят, интеграции не падали, сербская шава не уступала новогиреевской, а нейронки работали на тебя, а не вместо тебя. Огонь, короче.</p>
+        <h2>С ДНЁМ РОЖДЕНИЯ,<br /><em>НИКИТА!</em></h2>
+        <p>
+          Да, вспомнил ночью, когда день уже ушёл. Когда-нибудь я тебя поздравлю вовремя — задача в бэклоге, приоритет высокий, срок «к пятнице».<br /><br />Желаю,
+          чтобы заказчики знали, чего хотят, интеграции не падали, сербская шава не уступала новогиреевской, а нейронки работали на тебя, а не вместо
+          тебя. Огонь, короче.
+        </p>
         <button id="deploy" class="primary" type="button"><span>ЗАКРЫТЬ ТИКЕТ</span><b>✓</b></button>
         <div id="toast" class="toast">ТИКЕТ ЗАКРЫТ · ОПОЗДАНИЕ: 1 ДЕНЬ · ЛЮБОВЬ: В СРОК</div>
       </section>
     </main>
     <div class="route-progress" aria-hidden="true"><i id="progressBar"></i><span id="percent">000%</span></div>
-    <div class="corner-note">ПОЗДРАВЛЕНИЕ<br>НЕ ПО ДЕДЛАЙНУ</div>
-    <script type="module" src="./main.js?v=6"></script>
+    <div id="joystick" class="joystick" aria-hidden="true"><i></i></div>
+    <div class="free-hint"><span class="hint-desktop">WASD / СТРЕЛКИ — ИДТИ · SHIFT — БЕГ · ЗАЖМИ МЫШЬ — СМОТРЕТЬ</span><span class="hint-touch">ДЖОЙСТИК — ИДТИ · СВАЙП СПРАВА — СМОТРЕТЬ</span></div>
+    <div class="corner-note">ПОЗДРАВЛЕНИЕ<br />НЕ ПО ДЕДЛАЙНУ</div>
+    <script type="module" src="./main.js?v=8"></script>
   </body>
 </html>
